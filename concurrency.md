@@ -552,3 +552,28 @@ int main(int argc, char **argv) {
 - It can be difficult to write semaphores code (arguably)
 - One has to be careful with the code construction
 - If a thread dies and it holds a semaphore, the implicit token is lost
+
+## Some Advice for Locks
+
+- **Always** acquire multiple locks in the same order
+- Preferably release in reverse order as acquired: not required but good hygiene
+  (Lots of discussion on this, there are scenarios where that is not desired but
+  highly optimized implementation)
+- Example: SMP CPU scheduler where load balancing is required.
+
+## Example: SMP Scheduler
+
+```cpp
+Schedule(int i)
+{
+  lock(rqlock[i]);
+  {
+    // load balance with j
+    lock(rqlock[j]);
+    // pull some threads
+    unlock(rqlock[j]);
+  }
+  unlock(rqlock[i]);
+}
+```
+
