@@ -245,3 +245,154 @@ Pipes are not just for stdin and stdout. They can be created by applications
 used for all kinds of things.
 
 PipeBuffer typically has 16 write slots. 4KB guaranteed to be atomic.
+
+#### Race Condition
+
+```cpp
+#define N 100
+int count = 0;
+
+void producer()
+{
+  int item = produce_item();         // generate next item
+  if (count == N) sleep();           // if buffer is full, go to sleep
+  insert_item(item);                 // put item in buffer
+  count = count + 1;                 // increment count of items in buffer
+  if (count == 1) wakeup(consumer);  // was buffer empty?
+}
+
+void consumer()
+{
+  if (count == 0) sleep();              // if buffer is empty, go to sleep
+  int item = remove_item();             // take item out of buffer
+  count = count - 1;                    // decrement count of items in buffer
+  if (count == N - 1) wakeup(producer); // was buffer full?
+  consume_item(item);                   // consume/print item
+}
+```
+
+Fatal race condition in this example:
+
+1. Let count = 1
+2. Consumer begins loop, decrements count == 0
+3. COnsumer returns to loop beginning and executes: `if (count == 0)`, then
+   preemption happens
+4. Producer gets to run, executes `count = count + 1; if (count == 1)` and calls
+   `wakeup(consumer)`
+5. Preemption Consumer calls `sleep(consumer)`
+
+#### Requirements
+
+- Need a mechanism that allows synchronization between processes/threads on the
+  base of shared resources.
+- Synchronization implies interaction with scheduling subsystem.
+- Let to the innovation of semaphores.
+
+## Semaphore
+
+### Semaphore Data Structure
+
+```cpp
+class Semaphore
+{
+  int value;                // counter
+  Queue<Thread*> waiting;   // queue of threads waiting on semaphore
+
+  void Init(int v);         // initialization
+  void P();                 // acquiring the semaphore: down(), wait()
+  void V();                 // release the semaphore: up(), signal()
+}
+```
+
+Implementation:
+
+```cpp
+void Semaphore::Init(int v)
+{
+  value = v;
+  waiting = Queue<Thread*>.init();  // initialize empty queue
+}
+
+void Semaphore::P()
+{
+  value = value - 1;
+  if (value < 0) {
+    waiting.add(current_thread);
+    current_thread.status = BLOCKED;
+    schedule(); // forces wait, thread blocked
+  }
+}
+
+void Semaphore::V()
+{
+  value = value + 1;
+  if (value <= 0) {
+    Thread *thd = waiting.getNextThread();
+    scheduler->add(thd); // make it schedulable
+  }
+}
+```
+
+### How do P and V avoid race condition?
+
+`P()` and `V()` must be **atomic**.
+
+#### Solution: By disabling interruptions
+
+First line of `P()` and `V()` can disable interrupts. Last line of `P()` and
+`V()` re-enables interrupts.
+
+However, disabling interrupts only works on **single CPU systems**.
+
+#### Solution: Use atomic lock variable
+
+```cpp
+class Semaphore
+{
+  int lockvar;            // to guarantee atomicity
+  int value;              // counter
+  Queue<Thread*> waiting; // queue of threads waiting on semaphore
+
+  void Init(int v);       // initialization
+  void P();               // acquiring the semaphore: down(), wait()
+  void V();               // release the semaphore: up(), signal()
+}
+```
+
+New implementation:
+
+```cpp
+void Semaphore::P()
+{
+  lock(&lockvar); // +
+  value = value - 1;
+  if (value < 0) {
+    waiting.add(current_thread);
+    current_thread.status = BLOCKED;
+    unlock(&lockvar); // +
+    schedule(); // forces wait, thread blocked
+  } else {
+    unlock(&lockvar); // +
+  }
+}
+
+void Semaphore::V()
+{
+  lock(&lockvar); // +
+  value = value + 1;
+  if (value <= 0) {
+    Thread *thd = waiting.getNextThread();
+    scheduler->add(thd); // make it schedulable
+  }
+  unlock(&lockvar); // +
+}
+```
+
+### Two kinds of semaphores: Mutex and Counting
+
+**Mutex semaphores** or **binary semaphores** or simply LOCK is for mutual
+exclusion problems: value initialized to 1.
+
+**Counting semaphores** is for synchronization problems: value initialized to
+any value 0..N. Value shows available tokens to enter or number of processes
+waiting when negative.
