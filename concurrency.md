@@ -396,3 +396,97 @@ exclusion problems: value initialized to 1.
 **Counting semaphores** is for synchronization problems: value initialized to
 any value 0..N. Value shows available tokens to enter or number of processes
 waiting when negative.
+
+They are of same implementation, just different initial values.
+
+### Semaphore Solution to the Producer-Consumer Problem
+
+3 semaphores (minimal) example:
+
+```cpp
+#define N <somenumber>
+Semaphore empty = N;
+Semaphore full = 0;
+Semaphore mutex = 1;
+T buffer[N];
+int widx = 0, ridx = 0;
+
+Producer(T item)
+{
+  P(&empty);
+  P(&mutex); // Lock
+  buffer[widx] = item;
+  widx = (widx + 1) % N;
+  V(&mutex); // Unlock
+  V(&full);
+}
+
+Consumer(T &item)
+{
+  P(&full);
+  P(&mutex); // Lock
+  item = buffer[ridx];
+  ridx = (ridx + 1) % N;
+  V(&mutex); // Unlock
+  V(&empty);
+}
+```
+
+4 semaphores for lower lock contention:
+
+```cpp
+#define N <somenumber>
+Semaphore empty = N;
+Semaphore full = 0;
+Semaphore mutex_w = 1;
+Semaphore mutex_r = 1;
+T buffer[N];
+int widx = 0, ridx = 0;
+
+Producer(T item)
+{
+  P(&empty);
+  P(&mutex_w); // Lock
+  buffer[widx] = item;
+  widx = (widx + 1) % N;
+  V(&mutex_w); // Unlock
+  V(&full);
+}
+
+Consumer(T &item)
+{
+  P(&full);
+  P(&mutex_r); // Lock
+  item = buffer[ridx];
+  ridx = (ridx + 1) % N;
+  V(&mutex_r); // Unlock
+  V(&empty);
+}
+```
+
+Using two mutexes for read and write makes it possible for producer and consumer
+to be more concurrent (they should not be competing), thus less lock contention.
+
+## Mutexes in Pthreads
+
+Some of the Pthreads calls relating to mutexes are:
+
+| Thread call           | Description               |
+| --------------------- | ------------------------- |
+| Pthread_mutex_init    | Create a mutex            |
+| Pthread_mutex_destroy | Destroy an existing mutex |
+| Pthread_mutex_lock    | Acquire a lock or block   |
+| Pthread_mutex_trylock | Acquire a lock or fail    |
+| Pthread_mutex_unlock  | Release a lock            |
+
+Some of the Pthreads calls relating to condition variables are:
+
+| Thread call            | Description                                  |
+| ---------------------- | -------------------------------------------- |
+| Pthread_cond_init      | Create a condition variable                  |
+| Pthread_cond_destroy   | Destroy a condition variable                 |
+| Pthread_cond_wait      | Block waiting for a signal                   |
+| Pthread_cond_signal    | Signal another thread and wake it up         |
+| Pthread_cond_broadcast | Signal multiple threads and wake all of them |
+
+P: wait, V: signal
