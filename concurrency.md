@@ -214,3 +214,34 @@ This is a function of (is related to):
 
 If lock contention is low, [TSL](#the-tsl-instruction-test-and-set-lock) is an
 OK solution. The linux kernel uses it extensively for many locking scenarios.
+
+## Concurrency vs Parallelism
+
+**Concurrency** is having multiple contexts of execution not necessarily running
+at the exact same time.
+
+**Parallelism** is having multiple contexts of execution running at the exact
+same time.
+
+## Producer-Consumer Problem
+
+### Example: Piping
+
+`ls -ls | grep "yooh" | awk '{print $1}'`
+
+#### Responsibility of a Pipe
+
+- Provide Buffer to store data from stdout of Producer and release it to stdin
+  of Consumer
+- Block Producer when the buffer is full (because consumer has not consumed
+  data)
+- Block Consumer if no data in buffer when the consumer wants to read (stdin)
+- Unblock Producer when buffer space becomes free
+- Unblock Consumer when buffer data becomes available
+
+#### Pipes
+
+Pipes are not just for stdin and stdout. They can be created by applications
+used for all kinds of things.
+
+PipeBuffer typically has 16 write slots. 4KB guaranteed to be atomic.
