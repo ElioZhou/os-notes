@@ -135,6 +135,8 @@ With a "little help" from hardware: the test and set instruction is used to
 write(set) 1 to a memory location and return its old value as a single atomic
 (non-interruptible) operation.
 
+This is implemented by locking the bus.
+
 ```asm
 enter_region:
   TSL REGISTER, LOCK   | copy lock to register and set lock to 1
@@ -146,3 +148,69 @@ leave_region:
   MOVE LOCK, #0        | set lock to 0
   RET                  | return to caller
 ```
+
+### The XCHG Instruction (cmp_and_swap)
+
+This is also implemented by locking the bus.
+
+```asm
+enter_region:
+  MOVE REGISTER, #1    | put a 1 in the register
+  XCHG REGISTER, LOCK  | swap the contents of the register and lock variable
+  CMP REGISTER, #0     | was lock 0?
+  JNE enter_region     | if not, loop
+  RET                  | return to caller; critical region entered
+
+leave_region:
+  MOVE LOCK, #0        | set lock to 0
+  RET                  | return to caller
+```
+
+### Load / Store Conditional
+
+Modern processors resolve cmp_and_swap through the cache coherency mechanism.
+
+Reservation (`ldwx`) remembers ONE address on a CPU and verifies on (`stwx`)
+whether still held otherwise store will fail.
+
+```asm
+L1:
+  ldwx r3, @lockvar    // load r3 and set reservation register on CPU with &lockvar
+  add r3, r3, #1       // increment r3
+  stwx r3, @lockvar    // store r3 back to lockvar only if reservation still held
+  bcond L1             // if store conditionally failed, loop
+```
+
+Reservation is lost on:
+
+1. interrupts
+2. if another CPU steals cacheline holding `lockvar`
+3. if another `lwdx` is issued.
+
+### Comparisons
+
+Both TSL (xchg/cmpswp) and Peterson's solution are correct, but they:
+
+- rely on busy-waiting during "contention"
+- waste CPU cycles (one way to circumvent this is by calling thread_yield to
+  voluntarily give up the CPU and upon rescheduling it will attempt again)
+- [Priority Inversion problem](#priority-inversion-problem)
+
+### Priority Inversion Problem
+
+Higher priority process can be prevented from entering a critical section (CS)
+because the lock variable is dependent on a lower priority process.
+
+## Lock Contention
+
+**Lock Contention** arises when a process/thread attempts to acquire a lock and
+the lock is not available.
+
+This is a function of (is related to):
+
+- frequency of attempts to acquire the lock
+- lock hold time (time between acquisition and release)
+- number of threads/processes acquiring a lock
+
+If lock contention is low, [TSL](#the-tsl-instruction-test-and-set-lock) is an
+OK solution. The linux kernel uses it extensively for many locking scenarios.
