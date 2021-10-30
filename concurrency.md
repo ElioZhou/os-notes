@@ -694,7 +694,16 @@ monitor ProducerConsumer
 end monitor;
 ```
 
-## Producer-Consumer Problem with Message Passing
+## Message Passing
+
+When there's no shared memory (e.g. on distributed systems), we can send LAN
+messages instead.
+
+`send(destination, &message);`
+
+`send(destination, &message);`
+
+### Producer-Consumer Problem with Message Passing
 
 ```cpp
 #define N 100 // number of slots in the buffer
@@ -726,3 +735,49 @@ void consumer(void)
   }
 }
 ```
+
+### Message Passing Issues
+
+- Guard against lost messages (acknowledgement)
+- Authentication (guard against imposters)
+
+Addressing:
+
+- To processes
+- Via Mailbox (place to buffer messages)
+- Send to a full mailbox means block
+- Receive from an empty mailbox means block
+
+### What about buffer-less messages?
+
+Send and Receive wait (block) for each other to be ready to talk: rendezvous
+(meet at an agreed time and place)
+
+## Barriers
+
+A barrier for a group of threads or processes means any thread/process must stop
+at this point and cannot proceed until all other threads/processes reach this
+barrier.
+
+Three possible states:
+
+1. Processes approaching a barrier
+2. All processes but one blocked at the barrier
+3. When the last process arrives at the barrier, all of them are let through
+
+## Deadlocks
+
+### Deadlock vs Starvation
+
+**Deadlock**: Process(es) waiting on events (resources) that will never happen.
+Can be system wide or just one process.
+
+**Starvation**: Process(es) waiting for its turn but never comes.
+
+Process could move forward, the resource or event might become available but
+this process may not be able to get access to it.
+
+Such starvation is usually caused by certain policy. For example, a printing
+policy may always choose to print the smallest file available. Then now one
+process shows up with HUGE file. This process will not likely get to run if
+there's steady stream of smaller file jobs coming in.
