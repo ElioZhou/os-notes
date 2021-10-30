@@ -561,7 +561,9 @@ int main(int argc, char **argv) {
   highly optimized implementation)
 - Example: SMP CPU scheduler where load balancing is required.
 
-## Example: SMP Scheduler
+### Example: SMP Scheduler
+
+#### Deadlock example
 
 ```cpp
 Schedule(int i)
@@ -570,10 +572,44 @@ Schedule(int i)
   {
     // load balance with j
     lock(rqlock[j]);
-    // pull some threads
+    // pull some threads from j to i
     unlock(rqlock[j]);
   }
   unlock(rqlock[i]);
 }
 ```
 
+Consider situation: `cpu0 (i=0, j=1)` and `cpu1 (i=1, j=0)`, this can lead to
+deadlocks -> must use same order instead
+
+#### Force order solution
+
+We force the correct order. If necessary, we release owned lock first and
+re-acquire.
+
+```cpp
+Schedule(int i)
+{
+  lock(rqlock[i]);
+  {
+    // load balance with j
+    add_lock(i, j);
+    // pull some threads from j to i
+    unlock(rqlock[j]);
+  }
+  unlock(rqlock[i]);
+}
+
+void add_lock(int hlv, int alv) // hlv: holding lock, alv: acquiring lock
+{
+  if (hlv > alv) { // could be "<" or based on addresses, doesn't matter
+    // first unlock hlv
+    unlock(rqlock[hlv]);
+    lock(rqlock[alv]);
+    // then lock hlv
+    lock(rqlock[hlv]);
+  } else {
+    lock(rqlock[alv]);
+  }
+}
+```
