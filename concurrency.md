@@ -613,3 +613,27 @@ void add_lock(int hlv, int alv) // hlv: holding lock, alv: acquiring lock
   }
 }
 ```
+
+## Busy Lock vs Semaphore
+
+If lock hold time is short and/or code is uninterruptible, then lock variables
+and busy waiting is OK (linux kernel uses it all the time).
+
+Otherwise, use semaphores.
+
+## Other Unix/Linux Mechanisms
+
+- File based: flock()
+- System V semaphores: heavy weight as each call is a system call going into the
+  kernel.
+
+  semget(), semop() [P and V]
+
+- Futexes: lighter weight as uncontested cases are resolved done using cmpxchg
+  in userspace and if race condition is recognized it goes into kernel.
+
+  futex()
+
+- Message queues
+
+  mq_open(), mq_close(), mq_send(), mq_receive()
