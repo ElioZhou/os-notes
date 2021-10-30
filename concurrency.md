@@ -931,3 +931,37 @@ An **unsafe** state is NOT a deadlock state.
 For example, assume a total of 10 instances of the resources available:
 
 ![Safe states example](.gitbook/assets/safe-and-unsafe-states-example.png)
+
+### The Banker's Algorithm
+
+The algorithm checks if granting the request leads to an unsafe state. If it
+does, the request is denied.
+
+#### The main idea
+
+The algorithm checks to see if it has enough resources to satisfy some
+customers.
+
+If so, the process closest to the limit is assumed to be done and resources are
+back, and so on.
+
+If all loans (resources) can eventually be repaid, the state is safe.
+
+### Example
+
+![Banker's Algorithm Example](.gitbook/assets/bankers-algorithm-example.png)
+
+### Problems
+
+Very nice theoretically, but practically useless.
+
+- Processes rarely know in advance what their maximum resource needs will be.
+- The number of processes is not fixed.
+- Resources can suddenly vanish.
+
+### Deadlock Prevention
+
+Deadlock avoidance is essentially impossible.
+
+If we can ensure that at least one of the four conditions of the deadlock is
+never satisfied, then deadlocks will be structurally impossible.
