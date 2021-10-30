@@ -913,3 +913,21 @@ Kill a process in the cycle.
 Can be repeated (i.e. kill other processes) until deadlock is resolved.
 
 The victim can also be a process NOT in the cycle.
+
+## Deadlock Avoidance
+
+In most systems, resources are requested one at a time.
+
+Resource is granted only if it is **safe** to do so.
+
+### Safe and Unsafe States
+
+A **state** is said to be **safe** if there is one scheduling order in which
+every process can run to completion even if all of theme suddenly request their
+maximum number of resources immediately.
+
+An **unsafe** state is NOT a deadlock state.
+
+For example, assume a total of 10 instances of the resources available:
+
+![Safe states example](.gitbook/assets/safe-and-unsafe-states-example.png)
