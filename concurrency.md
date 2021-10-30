@@ -637,3 +637,59 @@ Otherwise, use semaphores.
 - Message queues
 
   mq_open(), mq_close(), mq_send(), mq_receive()
+
+## Monitors
+
+Hoare and Brinch Hansen proposed a higher-level synchronization primitive:
+monitor.
+
+- Only ONE thread allowed inside the Monitor
+- Compiler achieves Mutual Exclusion
+- Monitor is a programming language construct like a class or a for-loop
+
+We still need a way to synchronize on events:
+
+- Condition variables: wait & signal
+- Not counters: signaling with no one waiting -> event lost
+- Waiting on signal releases the monitor and wakeup reacquires it
+
+### Monitor Example
+
+```pas
+monitor example
+  integer i;
+  condition c;
+
+  procedure producer();
+  (* ... *)
+  end;
+
+  procedure consumer();
+  (* ... *)
+  end;
+end monitor;
+```
+
+### Producer-Consumer Problem with Monitor
+
+```pas
+monitor ProducerConsumer
+  condition full, empty;
+  integer count;
+  procedure insert(item: integer);
+  begin
+    if count = N then wait(full);
+    insert_item(item);
+    count := count + 1;
+    if count = 1 then signal(empty);
+  end;
+  function remove: integer;
+  begin
+    if count = 0 then wait(empty);
+    remove:= remove_item();
+    count := count - 1;
+    if count = N-1 then signal(full);
+  end;
+  count := 0;
+end monitor;
+```
