@@ -767,6 +767,10 @@ Three possible states:
 
 ## Deadlocks
 
+A deadlock is a state in which each member of a group waits for another member,
+including itself, to take action. It occurs among processes/threads who need to
+acquire resources in order to progress.
+
 ### Deadlock vs Starvation
 
 **Deadlock**: Process(es) waiting on events (resources) that will never happen.
@@ -781,3 +785,23 @@ Such starvation is usually caused by certain policy. For example, a printing
 policy may always choose to print the smallest file available. Then now one
 process shows up with HUGE file. This process will not likely get to run if
 there's steady stream of smaller file jobs coming in.
+
+### Resources
+
+Resources are anything that must be acquired, used and released over the course
+of time. Could be hardware or software resources.
+
+#### Preemptable and non-preemptable resources
+
+- **Preemptable**: can be taken away from the process with no ill-effect
+- **Non-preemptable**: cannot be taken away from the process without causing the
+  computation to fail
+
+## Reusable and Consumable resources
+
+- **Reusable**: can be safely used by only one process at a time and is not
+  depleted by that use. e.g. processors, I/O devices, main and secondary memory,
+  devices, and data structures such as files, databases and semaphores.
+
+- **Consumable**: one that can be created (produced) and destroyed (consumed).
+  e.g. interrupts, signals, messages and information in I/O buffers.
