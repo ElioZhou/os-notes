@@ -771,6 +771,15 @@ A deadlock is a state in which each member of a group waits for another member,
 including itself, to take action. It occurs among processes/threads who need to
 acquire resources in order to progress.
 
+A set of processes is deadlocked if each process in the set is waiting for an
+event that only another process in the set can cause.
+
+Assumptions:
+
+- If a process is denied a resource, it is put to sleep
+- Only single-threaded processes
+- No interrupts possible to wake up a blocked process
+
 ### Deadlock vs Starvation
 
 **Deadlock**: Process(es) waiting on events (resources) that will never happen.
@@ -797,7 +806,7 @@ of time. Could be hardware or software resources.
 - **Non-preemptable**: cannot be taken away from the process without causing the
   computation to fail
 
-## Reusable and Consumable resources
+#### Reusable and Consumable resources
 
 - **Reusable**: can be safely used by only one process at a time and is not
   depleted by that use. e.g. processors, I/O devices, main and secondary memory,
@@ -805,3 +814,14 @@ of time. Could be hardware or software resources.
 
 - **Consumable**: one that can be created (produced) and destroyed (consumed).
   e.g. interrupts, signals, messages and information in I/O buffers.
+
+### Conditions for Resource Deadlocks
+
+1. Each resource is either currently assigned to exactly one process or is
+   available
+2. Processes currently holding resources that were granted earlier can request
+   new resources
+3. Resources previously granted cannot be forcibly taken away from a process.
+   They must be explicitly released by the process holding them.
+4. There must be a circular chain of two or more processes, each of which is
+   waiting for a resource held by the next member of the chain.
