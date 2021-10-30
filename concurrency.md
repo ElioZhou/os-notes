@@ -959,9 +959,68 @@ Very nice theoretically, but practically useless.
 - The number of processes is not fixed.
 - Resources can suddenly vanish.
 
-### Deadlock Prevention
+## Deadlock Prevention
 
 Deadlock avoidance is essentially impossible.
 
 If we can ensure that at least one of the four conditions of the deadlock is
 never satisfied, then deadlocks will be structurally impossible.
+
+### Deadlock Prevention: Attacking the Mutual Exclusion
+
+Can be done for some resources (e.g. the printer) but not all.
+
+E.g. For printer, use spooling (Spooling is a process in which data is
+temporarily held to be used and executed by a device, program or the system.).
+
+Words of wisdom:
+
+- Avoid assigning a resource when that is not absolutely necessary.
+- Try to make sure that as few processes as possible may actually claim the
+  resource.
+
+### Deadlock Prevention: Attacking the Hold and Wait Condition
+
+Prevent processes holding resources from waiting for more resources. This
+requires all processes to request all their resources before starting execution.
+
+A different strategy: require a process requesting a resource to first
+temporarily release all the resources it currently holds. Then tries to get
+everything it needs all at once.
+
+### Deadlock Prevention: Attacking No Preemption Condition
+
+Virtualizing some resources can be a good strategy. (e.g. virtualize a printer).
+
+Not all resources can be virtualized. (e.g. records in a database)
+
+### Deadlock Prevention: Attacking the Circular Wait Condition
+
+Method 1: Have a rule saying that a process is entitled only to a single
+resource at a moment.
+
+Method 2:
+
+- Provide a global numbering of all resources.
+- A process can request resources whenever they want to, but all requests must
+  be done in numerical order.
+- With this rule, resource allocation graph can never have cycles.
+
+### Summary
+
+| Condition        | Approach                              |
+| ---------------- | ------------------------------------- |
+| Mutual exclusion | Spool everything                      |
+| Hold and wait    | Request all resources initially       |
+| No preemption    | Take resources away / virtualize them |
+| Circular wait    | Order resources numerically           |
+
+## Conclusions
+
+Deadlocks can occur on hardware/software resources.
+
+OS needs to be able to:
+
+- Try to avoid them if possible
+- Detect deadlocks
+- Deal with them when detected
