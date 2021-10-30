@@ -825,3 +825,91 @@ of time. Could be hardware or software resources.
    They must be explicitly released by the process holding them.
 4. There must be a circular chain of two or more processes, each of which is
    waiting for a resource held by the next member of the chain.
+
+### Resource Allocation Graph
+
+![Resource Allocation Graph](.gitbook/assets/resource-allocation-graph.png)
+
+## How to Deal with Deadlocks
+
+1. Just ignore the problem.
+2. Let deadlocks occur, detect them, and take action.
+3. Dynamic avoidance by careful resource allocation.
+4. Prevention, by structurally negating one of the
+   [four required conditions](#conditions-for-resource-deadlocks).
+
+### The Ostrich Algorithm
+
+The ostrich algorithm is a strategy of ignoring potential problems on the basis
+that they may be exceedingly rare. It is used when it is more cost-effective to
+allow the problem to occur than to attempt its prevention.
+
+## Deadlock Detection
+
+The system does not attempt to prevent deadlocks. It tries to detect it when it
+happens. Then it takes some actions to recover.
+
+Several issues here:
+
+- Deadlock detection with one resource of each type
+- Deadlock detection with multiple resources of each type
+- Recovery from deadlock
+
+### Deadlock Detection: One Resource of Each Type
+
+Construct a resource graph. If it contains one ore more cycles, a deadlock
+exists.
+
+### Formal Algorithm to Detect Cycles in the Allocation Graph
+
+For each node N in the graph do:
+
+1. Initialize L to empty list and designate all arcs as unmarked
+2. Add the current node to end of L. If the node appears in L twice then we have
+   a cycle and the algorithm terminates
+3. From the given node, pick any unmarked outgoing arc. If none is available, go
+   to 5.
+4. Pick an outgoing arc at random and mark it. Then follow it to the new current
+   node and go to 2.
+5. If the node is the initial node, then no cycles found and the algorithm
+   terminates; Otherwise, we are in dead end. Remove that node and go back to
+   the previous one. Go to 2.
+
+### When to check for deadlocks?
+
+- Check every time a resource request is made
+- Check every k minutes
+- When CPU utilization has dropped below a threshold
+
+## Recovery from Deadlock
+
+We have detected a deadlock, what next? We have some options: Recovery through
+preemption, recovery through rollback and recovery through killing process.
+
+### Recovery Through Preemption
+
+Temporary take a resource away from its owner and give it to another process.
+
+Manual intervention may be required (e.g. in case of printer)
+
+Highly dependent on the nature of the resource.
+
+Recovering this way is frequently impossible.
+
+### Recovery Through Rollback
+
+Have processes **checkpointed** periodically.
+
+**Checkpoint** of a process: its state is written to a file so that it can be
+restarted later.
+
+In case of deadlock, a process that owns a needed resource is rolled back to the
+point before it acquired that resource.
+
+### Recovery Through Killing Process
+
+Kill a process in the cycle.
+
+Can be repeated (i.e. kill other processes) until deadlock is resolved.
+
+The victim can also be a process NOT in the cycle.

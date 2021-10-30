@@ -1,5 +1,5 @@
 ---
-description: Introduction to Operating Systems
+description: Kernel Structures and System Calls
 ---
 
 # Introduction
