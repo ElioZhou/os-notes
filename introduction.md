@@ -124,7 +124,7 @@ A process includes:
 
 - Address space
 - Process table entries (state, registers): Open files, thread(s) state,
-  resources held
+  resources field
 
 A process tree:
 
