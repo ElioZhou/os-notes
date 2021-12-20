@@ -124,3 +124,62 @@ process image.
 ### Using Queues to Manage Processes
 
 ![Single blocked queue](.gitbook/assets/using-queues-to-manage-processes.png)
+
+![Multiple blocked queues](.gitbook/assets/using-queues-to-manage-processes-multiple.png)
+
+## Multiprogramming
+
+- One CPU and several processes
+- CPU switches from process to process quickly
+
+Running the same program several times will not result in the same execution
+times due to:
+
+- interrupts
+- multi-programming
+
+## Concurrency vs. Parallelism
+
+- Concurrency is when two or more tasks can start, run, and complete in
+  overlapping time periods. It doesn't necessarily mean they'll ever both be
+  running at the same instant. For example, multitasking on a single-core
+  machine.
+- Parallelism is when tasks literally run at the same time, e.g., on a multicore
+  processor.
+
+## Threads
+
+- Multiple threads of control within a process: unique execution
+- All threads of a process share the same address space and resources (with
+  exception of stack)
+
+### Why Threads?
+
+- For some applications many activities can happen at once:
+  - With threads, programming becomes easier
+    - Otherwise application needs to actively manage different logical
+      executions in the process
+    - This requires significant state management
+  - Benefit applications with I/O and processing that can overlap
+- Lighter weight than processes
+- Can be used to implement concurrency
+  - Faster to create and restore: we just really need a stack and an execution
+    unit, but don't have to create new address space etc.
+
+### Processes vs. Threads
+
+- Process groups resources: Address Space, files
+- Threads are entities scheduled for execution on CPU
+- Threads can be in any of several states: running, blocked, ready, and
+  terminated (remember the process state model?)
+- No protections among threads (unlike processes) [Why?] → this is important
+
+- The unit of dispatching is referred to as a
+thread or lightweight process (lwp)
+- The unit of resource ownership is referred
+to as a process or task
+(unfortunately in linux struct task
+represents both a process and thread)
+• Multithreading - The ability of an OS to
+support multiple, concurrent paths of
+execution within a single process
