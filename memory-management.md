@@ -425,7 +425,7 @@ Modifications:
 - add R bit as the leftmost bit
 - reset R bit
 
-This modified algorithm is called aging.Each bit in vector represents a period.
+This modified algorithm is called aging. Each bit in vector represents a period.
 The page whose counter is lowest is replaced at page replacement
 
 ![Aging algorithm](.gitbook/assets/aging-algorithm.png)
