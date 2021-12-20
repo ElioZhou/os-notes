@@ -173,13 +173,121 @@ times due to:
 - Threads can be in any of several states: running, blocked, ready, and
   terminated (remember the process state model?)
 - No protections among threads (unlike processes) [Why?] → this is important
+- The unit of dispatching is referred to as a thread or lightweight process
+  (lwp)
+- The unit of resource ownership is referred to as a process or task
+  (unfortunately in linux struct task represents both a process and thread)
+- Multithreading: The ability of an OS to support multiple, concurrent paths of
+  execution within a single process
+- Process is the unit for resource allocation and a unit of protection.
+- Process has its own (one) address space.
+- A thread has:
+  - an execution state (Running, Ready, etc.)
+  - saved thread context when not running
+  - an execution stack
+  - some per-thread static storage for local variables
+  - access to the memory and resources of its process (all threads of a process
+    share this)
 
-- The unit of dispatching is referred to as a
-thread or lightweight process (lwp)
-- The unit of resource ownership is referred
-to as a process or task
-(unfortunately in linux struct task
-represents both a process and thread)
-• Multithreading - The ability of an OS to
-support multiple, concurrent paths of
-execution within a single process
+## Kernel-Level Threads (KLTs)
+
+Thread management is done by the kernel. No thread management is done by the
+application.
+
+Advantages:
+
+- The kernel can simultaneously schedule multiple threads from the same process
+  on multiple processors
+- If one thread in a process is blocked, the kernel can schedule another thread
+  of the same process
+- Kernel routines can be multithreaded
+
+Disadvantages:
+
+- The transfer of control from one thread to another within the same process
+  requires a mode switch to the kernel
+
+## Implementing Threads in Kernel Space
+
+- Kernel knows about and manages the threads
+- No runtime is needed in each process
+- Creating/destroying/(other thread related operations) a thread involves a
+  system call
+
+Advantages:
+
+- When a thread blocks (due to page fault or blocking system calls) the OS can
+  execute another thread from the same process
+
+Disadvantages:
+
+- Scalability (operating systems had limited memory dedicated to them)
+- ~~Cost of system call is very high~~ (Disagree because if you want to
+  implement interruption to do thread scheduling you have to use
+  `signal(SIGVTALARM)` which is much more expensive.)
+
+## User-Level Threads (ULTs)
+
+- All thread management is done by the application
+- Initially developed to run on kernels that are not multithreading capable
+- The kernel is not aware of the existence of threads
+
+### Implementing Threads in User Space
+
+- Threads are implemented by a library
+- Kernel knows nothing about threads
+- Each process needs its own private thread table in userspace
+- Thread table is managed by the runtime system
+
+### Advantages
+
+- Thread switch does not require kernel-mode
+- Scheduling (of threads) can be application specific
+- Can run on any OS
+- Scales better
+
+### Disadvantages
+
+- A system-call by one thread can block all threads of that process
+- Page fault blocks the whole process
+- In pure ULT, multithreading cannot take advantage of multiprocessing
+
+## PCB vs. TCB
+
+Process Control Block handles global process resources. Thread Control Block
+handles thread execution resources.
+
+| Per process items           | Per thread items |
+| --------------------------- | ---------------- |
+| Address space               | Program counter  |
+| Global variables            | Registers        |
+| Open files                  | Stack            |
+| Child processes             | State            |
+| Pending alarms              |                  |
+| Signals and signal handlers |                  |
+| Accounting information      |                  |
+
+## 1:1, M:1, M:N
+
+Thread Models are also knows as general ratio of user threads over kernels
+threads
+
+- 1:1: each user thread == kernel thread
+- M:1: user level thread mode
+- M:N: hybrid model
+
+## Context Switch
+
+Scenarios:
+
+- Current process (or thread) blocks _OR_
+- Preemption
+
+Operations to be done:
+
+- Must release CPU resources (registers)
+- Requires storing "all" non provileged registers to the PCB or TCB save area
+- Tricky as you need registers to do this
+- All written in assembler
+- Typically an architecture has a few privileged registers so the kernel can
+  accomplish this
