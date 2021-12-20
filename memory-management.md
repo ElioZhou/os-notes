@@ -430,6 +430,42 @@ The page whose counter is lowest is replaced at page replacement
 
 ![Aging algorithm](.gitbook/assets/aging-algorithm.png)
 
+### The Working Set Model
+
+**Working set**: the set of pages that a process is currently using
+
+**Thrashing**: a program causing page faults at high rates (e.g.
+pagefaults/instructions metric)
+
+- OS must keep track of which pages are in the working set
+- Replacement algorithm: evict pages not in the working set
+- Possible implementation (but expensive): working set = set of pages accessed
+  in the last k memory references
+- Approximations: working set = pages used in the last 100 msec or 1 sec (etc.)
+
+#### Working Set Page Replacement Algorithm
+
+![Working set algorithm](.gitbook/assets/working-set-temp.png)
+
+#### WSClock Page Replacement Algorithm (specific implementation of Working Set Replacement)
+
+Based on the clock algorithm and uses working set
+
+- data structure: circular list of page frames (clock)
+- Each entry contains: time of last use, R bit
+- At page fault: page pointed by hand is examined
+  - If R = 1:
+    - Record current time, reset R
+    - Advance hand to next page
+  - If R = 0:
+    - If age > threshold and page is clean -> it is reclaimed
+    - If page is dirty -> write to disk is scheduled and hand advances (note in
+      lab3, we skip this step for simplicity reasons, but think why this is
+      advantageous?)
+    - Advance hand to next page
+
+![WSClock algorithm](.gitbook/assets/wsclock-temp.png)
+
 ## OS Involvement With Paging
 
 ### When a new process is created
