@@ -428,6 +428,8 @@ Modifications:
 This modified algorithm is called aging.Each bit in vector represents a period.
 The page whose counter is lowest is replaced at page replacement
 
+![Aging algorithm](.gitbook/assets/aging-algorithm.png)
+
 ## OS Involvement With Paging
 
 ### When a new process is created
