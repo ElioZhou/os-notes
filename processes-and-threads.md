@@ -308,6 +308,7 @@ Operations to be done:
 #### Process vs. Thread (understand differences)
 
 * Process is a resource container with at least one thread of execution
+* Process is the unit for resource allocation and a unit of protection.
 * Thread is a unit of execution that lives in a process (no thread without a process)
 * Threads share the resources of the owning process.
 
