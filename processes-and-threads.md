@@ -195,6 +195,8 @@ Running the same program several times will not result in the same execution tim
 * Threads are entities scheduled for execution on CPU
 * Threads can be in any of several states: running, blocked, ready, and terminated (remember the process state model?)
 * No protections among threads (unlike processes) \[Why?] → this is important
+  * _Since every thread can access every memory address within the process’ address space, one thread can read, write, or even completely wipe out another thread’s stack._
+  * _There is no protection between threads because (1) it is impossible, and (2) it should not be necessary_
 * The unit of dispatching is referred to as a thread or lightweight process (lwp)
 * The unit of resource ownership is referred to as a process or task (unfortunately in linux struct task represents both a process and thread)
 * Multithreading: The ability of an OS to support multiple, concurrent paths of execution within a single process
@@ -211,17 +213,17 @@ Running the same program several times will not result in the same execution tim
 
 Thread management is done by the kernel. No thread management is done by the application.
 
-Advantages:
+### Advantages:
 
 * The kernel can simultaneously schedule multiple threads from the same process on multiple processors
 * If one thread in a process is blocked, the kernel can schedule another thread of the same process
 * Kernel routines can be multithreaded
 
-Disadvantages:
+### Disadvantages:
 
 * The transfer of control from one thread to another within the same process requires a mode switch to the kernel
 
-## Implementing Threads in Kernel Space
+### Implementing Threads in Kernel Space
 
 * Kernel knows about and manages the threads
 * No runtime is needed in each process
@@ -233,7 +235,7 @@ Advantages:
 
 Disadvantages:
 
-* Scalability (operating systems had limited memory dedicated to them)
+* Scalability (operating systems had limited memory dedicated to them), **ULTs scales better.**
 * ~~Cost of system call is very high~~ (Disagree because if you want to implement interruption to do thread scheduling you have to use `signal(SIGVTALARM)` which is much more expensive.)
 
 ## User-Level Threads (ULTs)
@@ -252,13 +254,13 @@ Disadvantages:
 ### Advantages
 
 * Thread switch does not require kernel-mode
-* Scheduling (of threads) can be application specific
+* Scheduling (of threads) can be application-specific
 * Can run on any OS
 * Scales better
 
 ### Disadvantages
 
-* A system-call by one thread can block all threads of that process
+* A system call by one thread can block all threads of that process
 * Page fault blocks the whole process
 * In pure ULT, multithreading cannot take advantage of multiprocessing
 
@@ -278,7 +280,7 @@ Process Control Block handles global process resources. Thread Control Block han
 
 ## 1:1, M:1, M:N
 
-Thread Models are also knows as general ratio of user threads over kernels threads
+Thread Models are also known as the general ratio of user threads over kernels threads
 
 * 1:1: each user thread == kernel thread
 * M:1: user level thread mode
@@ -289,7 +291,7 @@ Thread Models are also knows as general ratio of user threads over kernels threa
 Scenarios:
 
 * Current process (or thread) blocks _OR_
-* Preemption
+* Preemption via interrupt
 
 Operations to be done:
 
@@ -298,3 +300,16 @@ Operations to be done:
 * Tricky as you need registers to do this
 * All written in assembler
 * Typically an architecture has a few privileged registers so the kernel can accomplish this
+
+## Conclusions
+
+#### Process/Threads are one the most central concepts in Operating Systems
+
+#### Process vs. Thread (understand differences)
+
+* Process is a resource container with at least one thread of execution
+* Thread is a unit of execution that lives in a process (no thread without a process)
+* Threads share the resources of the owning process.
+
+#### Multiprogramming vs multithreading
+
