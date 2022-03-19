@@ -103,6 +103,10 @@ Issues:
 * Cache management for Memory done in hardware
 * Data can be in read state in multiple caches but only in one cache when in write state
 
+#### Cache Coherency
+
+See lecture notes "Introduction" page 42.
+
 ## OS Major Components
 
 * Process and thread management
