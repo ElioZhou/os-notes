@@ -14,8 +14,10 @@ Operating systems turn ugly hardware into beautiful abstractions (arguable).
 
 ## Two Main Tasks of OS
 
-* Provide programmers (and programs) a clean set of abstract resources and services to manipulate these resources
+* Provide programmers (and programs) a clean set of abstract resources and services to manipulate these resources. How? -> System Call
+  * Abstraction, simplification, standardization
 * Manage the hardware resources
+  * Allocation, protection, reclamation, virtualization
 
 ## Resources and Services
 
