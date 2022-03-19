@@ -6,10 +6,6 @@ description: Kernel Structures and System Calls
 
 Operating systems turn ugly hardware into beautiful abstractions (arguable).
 
-## Structure
-
-
-
 ## The Operating System as a Resource Manager
 
 * Top down view: Provide abstractions to application programs
