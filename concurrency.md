@@ -80,7 +80,11 @@ Critical section / region is a protected section that accesses a shared resource
 3. No process running outside its critical region may block another process
 4. No process must wait forever to enter its critical region
 
-### Mutual Exclusion with Busy Waiting
+## Mutual Exclusion with Busy Waiting
+
+{% embed url="https://b23.tv/gwl9zZ4" %}
+【【操作系统】进程间通信—互斥-哔哩哔哩】
+{% endembed %}
 
 #### Simplest solution: Disable interrupt
 
@@ -208,6 +212,8 @@ If lock contention is low, [TSL](concurrency.md#the-tsl-instruction-test-and-set
 
 ## Producer-Consumer Problem
 
+Both synchronize and mutex&#x20;
+
 ### Example: Piping
 
 `ls -ls | grep "yooh" | awk '{print $1}'`
@@ -266,6 +272,10 @@ Fatal race condition in this example:
 * Let to the innovation of semaphores.
 
 ## Semaphore
+
+{% embed url="https://b23.tv/UsSyrcV" %}
+【操作系统】进程间通信—同步-哔哩哔哩
+{% endembed %}
 
 ### Semaphore Data Structure
 
@@ -373,6 +383,10 @@ void Semaphore::V()
 They are of same implementation, just different initial values.
 
 ### Semaphore Solution to the Producer-Consumer Problem
+
+{% embed url="https://b23.tv/pSqYqnZ" %}
+【计算机操作系统（期末必考系列）--进程同步生产者消费者（PV）-哔哩哔哩】
+{% endembed %}
 
 3 semaphores (minimal) example:
 
