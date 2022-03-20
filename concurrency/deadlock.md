@@ -1,7 +1,5 @@
 # Deadlock
 
-
-
 ## Deadlocks
 
 A deadlock is a state in which each member of a group waits for another member, including itself, to take action. It occurs among processes/threads who need to acquire resources in order to progress.
@@ -47,7 +45,7 @@ Resources are anything that must be acquired, used and released over the course 
 
 ### Resource Allocation Graph
 
-![Resource Allocation Graph](.gitbook/assets/resource-allocation-graph.png)
+![Resource Allocation Graph](../.gitbook/assets/resource-allocation-graph.png)
 
 ## How to Deal with Deadlocks
 
@@ -134,7 +132,7 @@ An **unsafe** state is NOT a deadlock state.
 
 For example, assume a total of 10 instances of the resources available:
 
-![Safe states example](.gitbook/assets/safe-and-unsafe-states-example.png)
+![Safe states example](../.gitbook/assets/safe-and-unsafe-states-example.png)
 
 ### The Banker's Algorithm
 
@@ -150,7 +148,7 @@ If all loans (resources) can eventually be repaid, the state is safe.
 
 ### Example
 
-![Banker's Algorithm Example](.gitbook/assets/bankers-algorithm-example.png)
+![Banker's Algorithm Example](../.gitbook/assets/bankers-algorithm-example.png)
 
 ### Problems
 
