@@ -69,9 +69,9 @@ So, expectation is that code has "consistent view" at data.
 
 ## Critical Region / Section
 
-Critical section / region is a protected section that accesses a shared resource, which can only executed by at most one process at a time.
+Critical section / region is a protected section in code that accesses a shared resource, which can only executed by at most one process at a time.
 
-**Mutual Exclusion**: Only one process (thread) at a time can access any shared variables, memory or resources.
+****
 
 ### Four conditions to prevent errors
 
@@ -85,6 +85,8 @@ Critical section / region is a protected section that accesses a shared resource
 {% embed url="https://b23.tv/gwl9zZ4" %}
 【【操作系统】进程间通信—互斥-哔哩哔哩】
 {% endembed %}
+
+**Mutual Exclusion**: Only one process (thread) at a time can access any shared variables, memory or resources.
 
 #### Simplest solution: Disable interrupt
 
