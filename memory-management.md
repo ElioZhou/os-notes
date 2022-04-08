@@ -13,9 +13,15 @@ Can be done at program load time, but it is a bad idea:
 
 To allow several programs to co-exist in memory we need:
 
-* Protection
-* Relocation
-* Sharing
+*   Protection
+
+    Processes need to acquire permission to reference memory locations for reading or writing purposes
+*   Relocation
+
+    Specifying that a process must be placed in the same memory region when it is swapped back in would be limiting – may need to relocate the process to a different area of memory
+*   Sharing
+
+    Memory management must allow controlled access to shared areas of memory without compromising protection
 * Logical organization
 * Physical organization
 
@@ -51,7 +57,14 @@ For every memory access:
 
 This can be done in hardware. So it doesn't significantly add to latency.
 
+#### What if memory space is not enough for all programs?
+
+* We may need to swap some programs out of the memory.&#x20;
+* Remember swapping means moving entire program to disk ➔ expensive
+
 ## Swapping
+
+![](<.gitbook/assets/image (1).png>)
 
 * Programs move in and out of memory
 * **Holes** are created
@@ -69,6 +82,8 @@ Bitmap is slow to find k-consecutive 0s for a new process.
 
 Linked List method consists of allocated and free memory segments. It is more convenient to use **double-linked** lists.
 
+![](.gitbook/assets/image.png)
+
 ## Buddy Algorithm
 
 Considers blocks of memory only as 2^N.
@@ -80,6 +95,8 @@ If no block of a size is available, it splits higher blocks into smaller blocks.
 Easy to implement and fast: `O(log2(MaxBlockSz/MinBlockSz))` e.g. 4K .. 128B = 2^(12-7) = 2^(5 steps)
 
 ### Examples
+
+{% embed url="https://www.youtube.com/watch?v=t49Vgj5MvMg" %}
 
 ![Allocation at level 0](.gitbook/assets/buddy-algorithm.png)
 
